@@ -23,7 +23,7 @@ A boilerplate for building projects using Gulp 4 and Handlebars.
 
 Make sure have the following installed:
 
-[Node.js](https://nodejs.org/en/)
+[Node.js](https://nodejs.org/en/)  
 [Gulp Command Line Utility](https://gulpjs.com/) `npm install -g gulp-cli`
 
 ##
