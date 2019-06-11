@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+
+    {{> includes/meta }}
+
+    {{#> styles-block}}
+      {{!-- Custom <head> content per page could be added. --}}
+    {{/styles-block}}
+  </head>
+  <body>
+    <main>
+
+      <header>
+        <div class="content">
+          {{> includes/header }}
+
+        </div>
+      </header>
+
+
+      <footer>
+        <div class="content">
+          {{> includes/footer }}
+
+        </div>
+      </footer>
+
+    </main>
+
+    {{#> scripts-block}}
+      {{!-- Custom scripts per page can be added. --}}
+    {{/scripts-block}}
+  </body>
+</html>
