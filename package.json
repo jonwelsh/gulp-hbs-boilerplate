@@ -1,0 +1,59 @@
+{
+  "name": "gulp-hbs-boilerplate",
+  "version": "1.0.0",
+  "description": "A Handlebars and Gulp 4 boilerplate",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonwelsh/gulp-hbs-boilerplate.git"
+  },
+  "keywords": [
+    "gulp",
+    "handlebars"
+  ],
+  "author": "Jon Welsh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonwelsh/gulp-hbs-boilerplate/issues"
+  },
+  "homepage": "https://github.com/jonwelsh/gulp-hbs-boilerplate#readme",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "babel-core": "^6.26.3",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "browser-sync": "^2.26.7",
+    "del": "^4.1.1",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^6.1.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-compile-handlebars": "^0.6.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-flatmap": "^1.0.2",
+    "gulp-header": "^2.0.7",
+    "gulp-imagemin": "^6.0.0",
+    "gulp-include": "^2.4.1",
+    "gulp-jshint": "^2.1.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-purgecss": "^1.2.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "gulp-webp": "^4.0.1",
+    "jshint": "^2.10.2",
+    "jshint-stylish": "^2.2.1",
+    "lazypipe": "^1.0.2"
+  },
+  "browserslist": [
+    "last 2 version",
+    "> 0.2%",
+    "Firefox ESR",
+    "not dead"
+  ],
+  "dependencies": {}
+}
