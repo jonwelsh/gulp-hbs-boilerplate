@@ -103,8 +103,8 @@ let js = lazypipe()
 		rename,
 		{ suffix: '.min' }
 	)
-	.pipe(uglify)
 	.pipe(babel)
+	.pipe(uglify)
 	.pipe(
 		header,
 		banner.min,
