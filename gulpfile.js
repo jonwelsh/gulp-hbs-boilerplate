@@ -265,7 +265,7 @@ exports.watch = series(
 	parallel(server, series(changed))
 );
 
-// REMOVE DIST FOLTER (gulp clean)
+// REMOVE DIST FOLDER (gulp clean)
 exports.clean = series(clean);
 
 // COMPILE EVERYTHING NO BROWSER (gulp)
