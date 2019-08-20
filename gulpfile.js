@@ -24,7 +24,7 @@ const concat = require('gulp-concat'),
 	jshint = require('gulp-jshint'),
 	stylish = require('jshint-stylish'),
 	include = require('gulp-include'),
-	uglify = require('gulp-uglify'),
+	terser = require('gulp-terser'),
 	babel = require('gulp-babel'),
 	flatmap = require('gulp-flatmap');
 
@@ -103,7 +103,7 @@ let js = lazypipe()
 		rename,
 		{ suffix: '.min' }
 	)
-	.pipe(uglify)
+	.pipe(terser)
 	.pipe(
 		header,
 		banner.min,
