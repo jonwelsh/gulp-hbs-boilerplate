@@ -51,9 +51,13 @@
   },
   "browserslist": [
     "last 2 version",
-    "> 0.2%",
+    "> 0.25%",
     "Firefox ESR",
     "not dead"
   ],
+  "babel": {
+    "presets": [],
+    "plugins": []
+  },
   "dependencies": {}
 }
