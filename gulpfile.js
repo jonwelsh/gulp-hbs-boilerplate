@@ -7,7 +7,6 @@ const header = require('gulp-header'),
 	sourcemaps = require('gulp-sourcemaps'),
 	del = require('del'),
 	newer = require('gulp-newer'),
-	lazypipe = require('lazypipe'),
 	packageDetails = require('./package.json');
 
 // NOTE: HANDLEBARS
@@ -27,6 +26,10 @@ const concat = require('gulp-concat'),
 	terser = require('gulp-terser'),
 	babel = require('gulp-babel'),
 	flatmap = require('gulp-flatmap');
+
+// NOTE: ERROR HANDLING
+const plumber = require('gulp-plumber'),
+	notify = require('gulp-notify');
 
 // NOTE: IMAGES
 const imagemin = require('gulp-imagemin'),
@@ -85,36 +88,6 @@ const banner = {
 		' */\n'
 };
 
-let js = lazypipe()
-	.pipe(sourcemaps.init)
-	.pipe(
-		header,
-		banner.full,
-		{ packageDetails: packageDetails }
-	)
-	.pipe(include)
-	.pipe(babel)
-	.pipe(
-		dest,
-		paths.scripts.output
-	)
-	.pipe(browserSync.stream)
-	.pipe(
-		rename,
-		{ suffix: '.min' }
-	)
-	.pipe(terser)
-	.pipe(
-		header,
-		banner.min,
-		{ packageDetails: packageDetails }
-	)
-	.pipe(sourcemaps.write.bind(null, './maps'))
-	.pipe(
-		dest,
-		paths.scripts.output
-	);
-
 // NOTE: REMOVE EXISTING DIST FOLDER
 function clean(done) {
 	// clean the build folder
@@ -142,6 +115,21 @@ function hbs() {
 // NOTE: COMPILE, LINT, CONCAT, REMOVE UNUSED AND MINIFY
 function css() {
 	return src(paths.styles.input)
+		.pipe(
+			plumber({
+				errorHandler: function(err) {
+					notify.onError({
+						title: 'SCSS Error!',
+						subtitle: 'See the terminal for more information.',
+						message: '<%= error.message %>',
+						wait: false,
+						templateOptions: {
+							date: new Date().toDateString()
+						}
+					})(err);
+				}
+			})
+		)
 		.pipe(sass({ outputStyle: 'expanded', sourceComments: true }))
 		.on('error', sass.logError)
 		.pipe(
@@ -161,9 +149,54 @@ function css() {
 		.pipe(sourcemaps.init())
 		.pipe(rename({ suffix: '.min' }))
 		.pipe(cleanCss({ level: { 1: { specialComments: 'none' } } }))
+		.pipe(
+			notify({
+				title: 'Stylesheet updated successfully',
+				message: '<%= file.relative %>'
+			})
+		)
 		.pipe(header(banner.min, { packageDetails: packageDetails }))
 		.pipe(sourcemaps.write('./maps'))
 		.pipe(dest(paths.styles.output))
+		.pipe(browserSync.stream());
+}
+
+function js() {
+	return src(paths.scripts.input)
+		.pipe(
+			plumber({
+				errorHandler: function(err) {
+					notify.onError({
+						title: 'JavaScript Error!',
+						subtitle: 'See the terminal for more information.',
+						message: '<%= error.message %>',
+						onLast: true,
+						wait: false,
+						templateOptions: {
+							date: new Date().toDateString()
+						}
+					})(err);
+				}
+			})
+		)
+		.pipe(header(banner.full, { packageDetails: packageDetails }))
+		.pipe(sourcemaps.init())
+		.pipe(include())
+		.pipe(babel())
+		.pipe(jshint())
+		.pipe(jshint.reporter(stylish))
+		.pipe(dest(paths.scripts.output))
+		.pipe(rename({ suffix: '.min' }))
+		.pipe(terser())
+		.pipe(header(banner.min, { packageDetails: packageDetails }))
+		.pipe(
+			notify({
+				title: 'JS updated successfully',
+				message: '<%= file.relative %>'
+			})
+		)
+		.pipe(sourcemaps.write('./maps'))
+		.pipe(dest(paths.scripts.output))
 		.pipe(browserSync.stream());
 }
 
@@ -182,13 +215,6 @@ function jsMinify() {
 			return stream.pipe(js()).pipe(browserSync.stream());
 		})
 	);
-}
-
-// NOTE: JS ERROR HANDLING
-function jsLint() {
-	return src(paths.scripts.input)
-		.pipe(jshint())
-		.pipe(jshint.reporter(stylish));
 }
 
 // NOTE: OPTIMISE IMAGE FILES
@@ -247,7 +273,7 @@ function changed() {
 		),
 		watch(
 			['src/assets/js/'],
-			series(jsMinify, function jsRelaod(done) {
+			series(js, function jsRelaod(done) {
 				browserSync.reload();
 				done();
 			})
@@ -255,23 +281,24 @@ function changed() {
 	);
 }
 
-// COMPILE< WATCH AND RELOAD (gulp watch)
-exports.watch = series(
-	parallel(hbs),
-	parallel(css, series(jsLint)),
-	parallel(jsMinify),
-	parallel(img, series(video)),
-	parallel(server, series(changed))
-);
-
 // REMOVE DIST FOLDER (gulp clean)
 exports.clean = series(clean);
 
-// COMPILE EVERYTHING NO BROWSER (gulp)
+// MEDIA TO BE MINIFIED
+exports.media = series(img, video);
+
+// COMPILE, WATCH AND RELOAD (gulp watch)
+exports.watch = parallel(
+	series(hbs, css, js),
+	series(img, video),
+	series(server, changed)
+);
+
+// CLEAN OLD AND COMPILE EVERYTHING NO BROWSER (gulp)
 exports.default = series(
 	clean,
 	parallel(hbs),
-	parallel(css, series(jsLint)),
+	parallel(css),
 	parallel(jsMinify),
 	parallel(img, series(video))
 );
