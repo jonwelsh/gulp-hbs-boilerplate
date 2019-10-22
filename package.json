@@ -4,7 +4,11 @@
   "description": "A Handlebars and Gulp 4 boilerplate",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard | snazzy",
+    "fix": "standard --fix",
+    "watch": "gulp watch",
+    "gulp": "gulp",
+    "clean": "gulp clean"
   },
   "repository": {
     "type": "git",
@@ -48,7 +52,9 @@
     "gulp-terser": "^1.2.0",
     "gulp-webp": "^4.0.1",
     "jshint": "^2.10.2",
-    "jshint-stylish": "^2.2.1"
+    "jshint-stylish": "^2.2.1",
+    "standard": "*",
+    "snazzy": "*"
   },
   "browserslist": [
     "last 2 version",
