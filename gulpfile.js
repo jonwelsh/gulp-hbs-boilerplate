@@ -2,38 +2,38 @@
 const { series, parallel, src, dest, watch } = require('gulp')
 
 // NOTE: GENERAL
-const header = require('gulp-header');
-	const rename = require('gulp-rename');
-	const sourcemaps = require('gulp-sourcemaps');
-	const del = require('del');
-	const newer = require('gulp-newer');
-	const packageDetails = require('./package.json')
+const header = require('gulp-header')
+const rename = require('gulp-rename')
+const sourcemaps = require('gulp-sourcemaps')
+const del = require('del')
+const newer = require('gulp-newer')
+const packageDetails = require('./package.json')
 
 // NOTE: HANDLEBARS
 var handlebars = require('gulp-compile-handlebars')
 
 // NOTE: STYLES
-const sass = require('gulp-sass');
-	const prefix = require('gulp-autoprefixer');
-	const purgecss = require('gulp-purgecss');
-	const cleanCss = require('gulp-clean-css')
+const sass = require('gulp-sass')
+const prefix = require('gulp-autoprefixer')
+const purgecss = require('gulp-purgecss')
+const cleanCss = require('gulp-clean-css')
 
 // NOTE: SCRIPTS
-const concat = require('gulp-concat');
-	const jshint = require('gulp-jshint');
-	const stylish = require('jshint-stylish');
-	const include = require('gulp-include');
-	const terser = require('gulp-terser');
-	const babel = require('gulp-babel');
-	const flatmap = require('gulp-flatmap')
+const concat = require('gulp-concat')
+const jshint = require('gulp-jshint')
+const stylish = require('jshint-stylish')
+const include = require('gulp-include')
+const terser = require('gulp-terser')
+const babel = require('gulp-babel')
+const flatmap = require('gulp-flatmap')
 
 // NOTE: ERROR HANDLING
-const plumber = require('gulp-plumber');
-	const notify = require('gulp-notify')
+const plumber = require('gulp-plumber')
+const notify = require('gulp-notify')
 
 // NOTE: IMAGES
-const imagemin = require('gulp-imagemin');
-	const webp = require('gulp-webp')
+const imagemin = require('gulp-imagemin')
+const webp = require('gulp-webp')
 
 // NOTE: BROWSER SYNC
 const browserSync = require('browser-sync').create()
@@ -74,29 +74,29 @@ const paths = {
 // NOTE: FILE HEADERS
 const banner = {
   full:
-		'/*!\n' +
-		' * <%= packageDetails.name %> \n' +
-		' * <%= packageDetails.description %> \n' +
-		' * <%= packageDetails.author %> \n' +
-		' * <%= packageDetails.repository.url %> \n' +
-		' */\n\n',
+    '/*!\n' +
+    ' * <%= packageDetails.name %> \n' +
+    ' * <%= packageDetails.description %> \n' +
+    ' * <%= packageDetails.author %> \n' +
+    ' * <%= packageDetails.repository.url %> \n' +
+    ' */\n\n',
   min:
-		'/*!' +
-		' * <%= packageDetails.name %>' +
-		' | <%= packageDetails.author %>' +
-		' | <%= packageDetails.repository.url %>' +
-		' */\n'
+    '/*!' +
+    ' * <%= packageDetails.name %>' +
+    ' | <%= packageDetails.author %>' +
+    ' | <%= packageDetails.repository.url %>' +
+    ' */\n'
 }
 
 // NOTE: REMOVE EXISTING DIST FOLDER
-function clean (done) {
+function clean(done) {
   // clean the build folder
   del.sync([paths.output])
-	return done()
+  return done()
 }
 
 // NOTE: COMPILE HBS TO HTML
-function hbs () {
+function hbs() {
   return src(paths.hbs.input)
     .pipe(
       handlebars(
@@ -113,11 +113,11 @@ function hbs () {
 }
 
 // NOTE: COMPILE, LINT, CONCAT, REMOVE UNUSED AND MINIFY
-function css () {
+function css() {
   return src(paths.styles.input)
     .pipe(
       plumber({
-        errorHandler: function (err) {
+        errorHandler: function(err) {
           notify.onError({
             title: 'SCSS Error!',
             subtitle: 'See the terminal for more information.',
@@ -127,7 +127,7 @@ function css () {
               date: new Date().toDateString()
             }
           })(err)
-				}
+        }
       })
     )
     .pipe(sass({ outputStyle: 'expanded', sourceComments: true }))
@@ -161,11 +161,11 @@ function css () {
     .pipe(browserSync.stream())
 }
 
-function js () {
+function js() {
   return src(paths.scripts.input)
     .pipe(
       plumber({
-        errorHandler: function (err) {
+        errorHandler: function(err) {
           notify.onError({
             title: 'JavaScript Error!',
             subtitle: 'See the terminal for more information.',
@@ -176,7 +176,7 @@ function js () {
               date: new Date().toDateString()
             }
           })(err)
-				}
+        }
       })
     )
     .pipe(header(banner.full, { packageDetails: packageDetails }))
@@ -201,30 +201,30 @@ function js () {
 }
 
 // NOTE: COMPILE, CONCAT AND MINIFY
-function jsMinify () {
+function jsMinify() {
   return src(paths.scripts.input).pipe(
-    flatmap(function (stream, file) {
+    flatmap(function(stream, file) {
       if (file.isDirectory()) {
         src(file.path + '/*.js')
           .pipe(concat(file.relative + '.js'))
           .pipe(js())
 
-				return stream
-			}
+        return stream
+      }
 
       return stream.pipe(js()).pipe(browserSync.stream())
-		})
+    })
   )
 }
 
 // NOTE: OPTIMISE IMAGE FILES
-function img () {
+function img() {
   return src(paths.img.input)
     .pipe(newer(paths.img.output))
     .pipe(
       imagemin([
         imagemin.gifsicle({ interlaced: true }),
-        imagemin.jpegtran({ progressive: true }),
+        imagemin.mozjpeg({ progressive: true }),
         imagemin.optipng({ optimizationLevel: 5 }),
         imagemin.svgo({
           plugins: [{ removeViewBox: true }, { cleanupIDs: false }]
@@ -238,45 +238,45 @@ function img () {
 }
 
 // NOTE: COPY VIDEO FILES
-function video () {
+function video() {
   return src(paths.vid.input)
     .pipe(newer(paths.vid.output))
     .pipe(dest(paths.vid.output))
 }
 
 // NOTE: INITIATE SERVER
-function server (done) {
+function server(done) {
   browserSync.init({
     server: {
       baseDir: paths.reload
     }
   })
-	done()
+  done()
 }
 
 // NOTE: WATCH FOR CHANGES
-function changed () {
+function changed() {
   return (
     watch(
       ['src/assets/scss/'],
-      series(css, function cssRelaod (done) {
+      series(css, function cssRelaod(done) {
         browserSync.reload()
-				done()
-			})
+        done()
+      })
     ),
     watch(
       ['src/templates/'],
-      series(hbs, function hbsRelaod (done) {
+      series(hbs, function hbsRelaod(done) {
         browserSync.reload()
-				done()
-			})
+        done()
+      })
     ),
     watch(
       ['src/assets/js/'],
-      series(js, function jsRelaod (done) {
+      series(js, function jsRelaod(done) {
         browserSync.reload()
-				done()
-			})
+        done()
+      })
     )
   )
 }
@@ -288,17 +288,7 @@ exports.clean = series(clean)
 exports.media = series(img, video)
 
 // COMPILE, WATCH AND RELOAD (gulp watch)
-exports.watch = parallel(
-  series(hbs, css, js),
-  series(img, video),
-  series(server, changed)
-)
+exports.watch = parallel(series(hbs, css, js), series(img, video), series(server, changed))
 
 // CLEAN OLD AND COMPILE EVERYTHING NO BROWSER (gulp)
-exports.default = series(
-  clean,
-  parallel(hbs),
-  parallel(css),
-  parallel(jsMinify),
-  parallel(img, series(video))
-)
+exports.default = series(clean, parallel(hbs), parallel(css), parallel(jsMinify), parallel(img, series(video)))
