@@ -26,7 +26,7 @@
   "homepage": "https://github.com/jonwelsh/gulp-hbs-boilerplate#readme",
   "devDependencies": {
     "@babel/core": "^7.8.6",
-    "acorn": "^7.1.0",
+    "acorn": "^7.1.1",
     "babel-core": "^6.26.3",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
